@@ -35,5 +35,5 @@ with socket.socket(family=INTERNET_SOCKET, type=TCP) as client:
     host_name = host_packet["name"]
     num1 = host_packet["data"]
     
-    print(f"{host_name} has connected to {client_name}")
+    print(f"{host_name} has connected to {client_name}\n{host_name} sent over {num1} which, when summed with {client_name}'s number of {num2}, results in {num1+num2}")
     print(f"Sum of Values: {num1+num2}")
