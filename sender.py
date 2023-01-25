@@ -2,6 +2,7 @@
 
 import socket
 import sys
+import json
 
 # constants
 TCP = socket.SOCK_STREAM
@@ -12,23 +13,27 @@ INTERNET_SOCKET = socket.AF_INET
 max_bytes = 1024
 host_ip = "127.0.0.1" # localhost
 host_port = 65432 # random port > 5000
-ADDRESS = (host_ip, host_port)
+address = (host_ip, host_port)
+client_name = "The Client"
 
-exit_flag = False
 
 with socket.socket(family=INTERNET_SOCKET, type=TCP) as client:
-    client.connect(ADDRESS)
+    client.connect(address)
 
+    num2 = 7 # dummy initialization of num2
     try:
         num2 = int(sys.argv[1])
-        client.sendall(str(num2).encode("ascii")) # encode turns it into "bytes-like object"
-        num1 = int(client.recv(max_bytes).decode())
     except (IndexError, ValueError):
         print("You must provide an integer between 1 and 100\nPlease rerun both the server and client")
-        client.sendall(b'-1')
-        exit_flag = True
-        
-if exit_flag:
-    exit(1)
-else:
+        client.sendall(json.dumps({}).encode())
+        exit(1)
+
+    client_packet = {'name':client_name, 'data':num2}
+    client.sendall(json.dumps(client_packet).encode()) # encode turns it into "bytes-like object"
+
+    host_packet = json.loads(client.recv(max_bytes).decode())
+    host_name = host_packet["name"]
+    num1 = host_packet["data"]
+    
+    print(f"{host_name} has connected to {client_name}")
     print(f"Sum of Values: {num1+num2}")
